@@ -92,20 +92,60 @@ function speak(text, withFillers = true) {
     responseText.innerText = text; // Show clean text in UI
 }
 
-// --- Speech Recognition ---
+// --- Speech Recognition (Fixed for all devices) ---
 const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 let recognition;
 let isSpeaking = false;
 
+function debugLog(msg) {
+    console.log("SYRA DEBUG:", msg);
+    const logEl = document.getElementById('debug-log');
+    if (logEl) {
+        logEl.innerHTML = `<b style="color:#00ffff; border:1px solid #00ffff; padding:2px 5px; border-radius:3px;">V3.1 LIVE</b> ${msg}`;
+        logEl.style.display = 'block';
+        logEl.style.background = 'rgba(0, 255, 255, 0.1)';
+        logEl.style.padding = '10px';
+        logEl.style.marginTop = '15px';
+        logEl.style.borderRadius = '5px';
+        logEl.style.fontSize = '0.8rem';
+    }
+}
+
 if (SpeechRecognition) {
     recognition = new SpeechRecognition();
     recognition.lang = 'hi-IN';
-    recognition.continuous = true;
+    recognition.continuous = false; // Using false + manual restart for better reliability
+    recognition.interimResults = false;
+
+    recognition.onstart = () => {
+        debugLog("Suno... (Listening)");
+        statusText.innerText = "ONLINE";
+    };
+
     recognition.onresult = (event) => {
-        const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase();
+        const transcript = event.results[0][0].transcript.toLowerCase().trim();
+        debugLog(`Suna: "${transcript}"`);
         handleCommand(transcript);
     };
-    recognition.onend = () => { if (!isSpeaking && !SYRA_STATE.isStandby) try { recognition.start(); } catch (e) { } };
+
+    recognition.onerror = (event) => {
+        debugLog("Error: " + event.error);
+        if (event.error === 'network') {
+            debugLog("Network error. Checking mic...");
+        }
+        if (event.error === 'not-allowed') {
+            alert("Mic blocked! Link par top left lock icon pe click karke mic allow karein.");
+        }
+    };
+
+    recognition.onend = () => {
+        // Only restart if not speaking and not in standby
+        if (!isSpeaking && !SYRA_STATE.isStandby) {
+            setTimeout(() => {
+                try { recognition.start(); } catch (e) { }
+            }, 400);
+        }
+    };
 }
 
 function startSYRA() {
@@ -127,18 +167,32 @@ const INTENTS = [
         name: 'app_open',
         keywords: ['kholo', 'open', 'खोल', 'चलाओ'],
         apps: {
-            "youtube": ["https://www.youtube.com", "YouTube khol rahi hoon, Yug.", ["youtube", "यूट्यूब", "yt"]],
-            "google": ["https://www.google.com", "Google open ho raha hai.", ["google", "गूगल"]],
+            "youtube": ["https://www.youtube.com", "YouTube khol rahi hoon, Yug.", ["youtube", "यूट्यूब", "yt", "video"]],
+            "google": ["https://www.google.com", "Google open ho raha hai.", ["google", "गूगल", "search"]],
             "whatsapp": ["https://web.whatsapp.com", "WhatsApp khol rahi hoon.", ["whatsapp", "व्हाट्सएप", "मैसेज"]],
             "instagram": ["https://www.instagram.com", "Insta par chalte hain.", ["instagram", "इंस्टाग्राम", "insta"]],
+            "facebook": ["https://www.facebook.com", "Facebook khol rahi hoon.", ["facebook", "फेसबुक"]],
+            "twitter": ["https://www.twitter.com", "Twitter yaani X par chalte hain.", ["twitter", "x"]],
             "gmail": ["https://mail.google.com", "G-mail khul raha hai.", ["gmail", "मेल", "email"]],
-            "maps": ["https://maps.google.com", "Maps khol rahi hoon.", ["map", "नक्शा", "location"]]
+            "amazon": ["https://www.amazon.in", "Amazon shopping khol rahi hoon.", ["amazon", "अमेज़न"]],
+            "flipkart": ["https://www.flipkart.com", "Flipkart open ho raha hai.", ["flipkart", "फ्लिपकार्ट"]],
+            "netflix": ["https://www.netflix.com", "Netflix chalao Yug.", ["netflix", "नेटफ्लिक्स"]],
+            "spotify": ["https://open.spotify.com", "Spotify par music sunte hain.", ["spotify", "स्पॉटीफाई"]],
+            "maps": ["https://maps.google.com", "Maps khol rahi hoon.", ["map", "नक्शा", "location"]],
+            "github": ["https://www.github.com", "GitHub par chalte hain.", ["github", "गिटहब"]],
+            "chatgpt": ["https://chat.openai.com", "ChatGPT open ho raha hai.", ["chatgpt", "gpt", "ai"]],
+            "hotstar": ["https://www.hotstar.com", "Hotstar khul raha hai.", ["hotstar", "हॉटस्टार"]]
         },
         action: function (cmd) {
             for (let key in this.apps) {
                 if (this.apps[key][2].some(syn => cmd.includes(syn))) {
-                    speak(this.apps[key][1]);
-                    window.open(this.apps[key][0], "_blank");
+                    const win = window.open(this.apps[key][0], "_blank");
+                    if (!win) {
+                        speak("Bhai, shyad pop-up blocked hai. Please allow kijiye!");
+                        debugLog("POPUP BLOCKED");
+                    } else {
+                        speak(this.apps[key][1]);
+                    }
                     return true;
                 }
             }
@@ -147,10 +201,10 @@ const INTENTS = [
     },
     {
         name: 'youtube_search',
-        keywords: ['ganu sunao', 'song', 'video', 'play', 'bajao', 'चलाओ', 'सुनाओ'],
+        keywords: ['gana sunao', 'ganu sunao', 'song', 'video', 'play', 'bajao', 'चलाओ', 'सुनाओ', 'बजाओ'],
         action: function (cmd) {
-            if (cmd.includes('youtube') || cmd.includes('video') || cmd.includes('गाना')) {
-                let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|play|bajao|search/g, "").trim();
+            if (cmd.includes('youtube') || cmd.includes('video') || cmd.includes('गाना') || cmd.includes('song')) {
+                let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song/g, "").trim();
                 if (query.length > 1) {
                     speak(`Zaroor Yug, YouTube par ${query} play kar rahi hoon.`);
                     window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
@@ -191,60 +245,68 @@ const INTENTS = [
 ];
 
 function handleCommand(command) {
-    console.log("Recognition:", command);
-    const cmd = command.toLowerCase();
+    const cmd = command.toLowerCase().trim();
+    if (!cmd) return;
 
-    // --- Standby / Wake Check ---
     if (SYRA_STATE.isStandby) {
         if (cmd.includes("utho") || cmd.includes("wake up") || cmd.includes("jaago") || cmd.includes("hello")) {
             startSYRA();
-            return;
         }
         return;
     }
 
-    mainHint.innerText = `Suna: "${command}"`;
+    mainHint.innerText = `Recognized: "${command}"`;
     avatarEl.innerText = avatarEmojis.thinking;
     playSound('process');
 
-    // Try complex intents first
+    // --- STRATEGY 1: Direct App Match (Aggressive) ---
+    const appData = INTENTS.find(i => i.name === 'app_open').apps;
+    for (let key in appData) {
+        if (appData[key][2].some(syn => cmd.includes(syn))) {
+            const win = window.open(appData[key][0], "_blank");
+            if (win) {
+                speak(appData[key][1]);
+            } else {
+                speak("Bhai, pop-up block hai! Bar-bar yahi problem ho rahi hai. Please link ke upar wale lock icon se pop-ups allow kijiye.");
+                debugLog("POPUP BLOCKED - PLEASE ALLOW");
+            }
+            return;
+        }
+    }
+
+    // --- STRATEGY 2: Specific Verbs/Intents ---
     for (let intent of INTENTS) {
-        if (intent.keywords.some(k => cmd.includes(k))) {
+        if (intent.name !== 'app_open' && intent.keywords.some(k => cmd.includes(k))) {
             if (intent.action(cmd)) return;
         }
     }
 
-    // Small Talk / Guidance (Fallback to specific matches)
-    if (cmd.includes("guide") || cmd.includes("सलाह") || cmd.includes("advice")) {
-        const advice = [
-            "Yug, career mein hamesha long-term sochiye.",
-            "Zindagi mein balance zaroori hai. Shrishti ka saath aapki strength hai.",
-            "Relationship mein patience hi sab kuch hai. Ek dusre ki respect kijiye."
-        ];
-        speak(advice[Math.floor(Math.random() * advice.length)]);
+    // --- STRATEGY 3: Personality & Small Talk ---
+    if (cmd.includes("kaise ho") || cmd.includes("hello") || cmd.includes("namaste")) {
+        speak("Main bilkul theek hoon Yug. Aap bataiye, aaj main aapki kya help kar sakti hoon?");
     }
-    else if (cmd.includes("namaste") || cmd.includes("kaise ho") || cmd.includes("नमस्ते")) {
-        speak("Main bilkul theek hoon Yug. Aap ki awaaz sunkar mera din ban gaya.");
-    }
-    else if (cmd.includes("samay") || cmd.includes("time") || cmd.includes("समय")) {
-        speak("Abhi " + new Date().toLocaleTimeString('hi-IN') + " baje hain.");
+    else if (cmd.includes("guide") || cmd.includes("advice") || cmd.includes("salaah") || cmd.includes("सलाह")) {
+        speak("Yug, mera manna hai ki Shrishti ka saath aur aapka hard work aapko sabse upar le jayega.");
     }
     else if (cmd.includes("shrishti")) {
-        speak("Shrishti? Woh toh aapki duniya hain, Yug.");
+        speak("Shrishti aapki jaan hain, unka hamesha khayal rakhna.");
     }
-    else if (cmd.includes("bye") || cmd.includes("alvida")) {
-        speak("Alvida Yug! Khayal rakhna.");
-        setTimeout(() => { if (recognition) recognition.stop(); statusText.innerText = "OFF"; }, 2000);
+    else if (cmd.includes("time") || cmd.includes("samay")) {
+        speak("Abhi " + new Date().toLocaleTimeString('hi-IN') + " ho rahe hain.");
+    }
+    // --- STRATEGY 4: Ultimate Search Fallback ---
+    else if (cmd.length > 2) {
+        speak(`Theek hai Yug, main iske baare mein Google par search karti hoon.`);
+        setTimeout(() => {
+            window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
+        }, 2000);
     }
     else {
-        speak("Hmm... Maine suna Yug, par main ise abhi poori tarah samajh nahi paayi. Kya aap kuch aur batana chahenge?");
+        speak("Maine suna Yug, par main ise samajh nahi paayi. Thoda clear boliye?");
     }
 
     setTimeout(() => {
         playSound('complete');
-        if (!SYRA_STATE.isStandby) {
-            mainHint.innerText = "SYRA is active.";
-            avatarEl.innerText = avatarEmojis.active;
-        }
+        if (!SYRA_STATE.isStandby) avatarEl.innerText = avatarEmojis.active;
     }, 2500);
 }

@@ -35,6 +35,9 @@
             <h1 id="ai-status">SYRA</h1>
             <p id="response-text">Tap the avatar to wake me up...</p>
             <p id="main-hint">Classy Digital Companion</p>
+            <div id="debug-log"
+                style="font-size: 0.7rem; color: #ff8fb1; margin-top: 10px; display: none; opacity: 0.6;">D-LOG: STANDBY
+            </div>
         </div>
     </div>
 
@@ -46,10 +49,13 @@
 
     <div class="hud top-right">
         <div class="stat">SIGNAL: STABLE</div>
-        <div class="stat">VERSION: 2.0.FINAL</div>
+        <div class="stat">VERSION: 3.1.ULTIMATE</div>
     </div>
 
-    <script src="script.js"></script>
+    <!-- Cache-busting script tag -->
+    <script>
+        document.write('<script src="script.js?v=' + Date.now() + '"><\/script>');
+    </script>
 </body>
 
 </html>
