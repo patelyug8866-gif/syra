@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYRA - Your Digital Partner</title>
+    <link rel="stylesheet" href="style.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+    <!-- Premium Decorations -->
+    <div class="decorations">
+        <div class="circle" style="width: 400px; height: 400px; top: -100px; left: -100px;"></div>
+        <div class="circle" style="width: 300px; height: 300px; bottom: -50px; right: -50px; animation-delay: 2s;">
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Avatar & Interaction Area -->
+        <div class="avatar-wrapper" onclick="startSYRA()">
+            <div class="arc-rings">
+                <div class="ring outer-ring"></div>
+                <div class="ring inner-ring"></div>
+            </div>
+            <div class="avatar-container" id="avatar">
+                👩🏻‍💼
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h1 id="ai-status">SYRA</h1>
+            <p id="response-text">Tap the avatar to wake me up...</p>
+            <p id="main-hint">Classy Digital Companion</p>
+        </div>
+    </div>
+
+    <!-- Sci-Fi HUD Elements -->
+    <div class="hud top-left">
+        <div class="stat"><span class="online-dot"></span>SYRA CORE: ACTIVE</div>
+        <div class="stat">USER: YUG</div>
+    </div>
+
+    <div class="hud top-right">
+        <div class="stat">SIGNAL: STABLE</div>
+        <div class="stat">VERSION: 2.0.FINAL</div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
