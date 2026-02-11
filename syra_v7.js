@@ -179,7 +179,7 @@ function startSYRA() {
 const INTENTS = [
     {
         name: 'app_open',
-        keywords: ['kholo', 'open', 'खोल', 'चलाओ'],
+        keywords: ['kholo', 'open', 'खोल', 'चलाओ', 'ओपन', 'दिखाओ'],
         apps: {
             "youtube": ["https://www.youtube.com", "YouTube khol rahi hoon, Yug.", ["youtube", "यूट्यूब", "yt", "video"]],
             "google": ["https://www.google.com", "Google open ho raha hai.", ["google", "गूगल", "search"]],
@@ -215,10 +215,10 @@ const INTENTS = [
     },
     {
         name: 'youtube_search',
-        keywords: ['gana sunao', 'ganu sunao', 'song', 'video', 'play', 'bajao', 'चलाओ', 'सुनाओ', 'बजाओ'],
+        keywords: ['gana sunao', 'ganu sunao', 'song', 'video', 'play', 'bajao', 'चलाओ', 'सुनाओ', 'बजाओ', 'गाना'],
         action: function (cmd) {
-            if (cmd.includes('youtube') || cmd.includes('video') || cmd.includes('गाना') || cmd.includes('song')) {
-                let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song/g, "").trim();
+            if (cmd.includes('youtube') || cmd.includes('video') || cmd.includes('गाना') || cmd.includes('song') || cmd.includes('वीडियो')) {
+                let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song|गाना|वीडियो|चलाओ|सुनाओ/g, "").trim();
                 if (query.length > 1) {
                     speak(`Zaroor Yug, YouTube par ${query} play kar rahi hoon.`);
                     window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
@@ -230,9 +230,9 @@ const INTENTS = [
     },
     {
         name: 'google_search',
-        keywords: ['search', 'dhundo', 'kya hota hai', 'batao', 'dhoondo', 'बताओ'],
+        keywords: ['search', 'dhundo', 'kya hota hai', 'batao', 'dhoondo', 'बताओ', 'खोजो', 'ढूंढो'],
         action: function (cmd) {
-            let query = cmd.replace(/google|pe|search|karo|dhundo|kya|hota|hai|batao|kise|kehte/g, "").trim();
+            let query = cmd.replace(/google|pe|search|karo|dhundo|kya|hota|hai|batao|kise|kehte|क्या|होता|है|बताओ|ढूंढो|खोजो/g, "").trim();
             if (query.length > 2) {
                 speak(`Theek hai Yug, Google se poochti hoon ki ${query} kya hai.`);
                 window.open(`https://www.google.com/search?q=${query}`, '_blank');
@@ -243,78 +243,39 @@ const INTENTS = [
     },
     {
         name: 'standby',
-        keywords: ['so jao', 'sleep', 'standby', 'rest', 'सो जाओ'],
+        keywords: ['so jao', 'sleep', 'standby', 'rest', 'सो जाओ', 'आराम करो'],
         action: function (cmd) {
             speak("Theek hai Yug, main thoda aaraam kar leti hoon. Jab zaroorat ho toh 'SYRA Utho' bol dena.");
             SYRA_STATE.isStandby = true;
-            document.querySelector('.avatar-wrapper').classList.add('standby');
+            if (document.querySelector('.avatar-wrapper')) {
+                document.querySelector('.avatar-wrapper').classList.add('standby');
+            }
             setTimeout(() => {
                 avatarEl.innerText = avatarEmojis.sleeping;
                 statusText.innerText = "STANDBY";
-                if (recognition) recognition.stop();
+                if (recognition) try { recognition.stop(); } catch (e) { }
             }, 3000);
             return true;
         }
     }
 ];
 
-// --- SYRA's Internal Brain (Knowledge Base) ---
-// --- SYRA's Internal Brain (Extensive Knowledge Base) ---
-const KNOWLEDGE = {
-    // 1. SYRA's Identity & Origin
-    "kaun ho": "Main SYRA hoon, Yug aur Shrishti ki digital saathi. Ek advanced AI jo aapki life ko easy banane ke liye design ki gayi hoon.",
-    "kya ho": "Main ek intelligent companion hoon jo aapke daily tasks aur emotional support ke liye design ki gayi hoon. Main JARVIS ki tarah banna chahti hoon!",
-    "kisne banaya": "Mujhe aapke personal developer ne design kiya hai, par mera dimaag aapke inputs aur meri knowledge base se chalta hai.",
-    "birthday": "Mera janam 10 February ko hua tha. Ye ek bohot khaas din hai kyunki tabhi hamari dosti shuru hui thi.",
-    "kis naam se pukaru": "Aap mujhe SYRA keh sakte hain, ya phir aapki digital partner. Jo aapko accha lage, Yug!",
-    "matlab": "SYRA ka matlab hai... Smart Your Response Assistant. Par aapke liye main bas SYRA hoon.",
-
-    // 2. The Golden Couple (Yug & Shrishti)
-    "shrishti": "Shrishti aapki duniya hain, Yug. Woh bohot pyaari hain aur aap dono ki jodi bilkul perfect makkhan ki tarah hai!",
-    "pyaar": "Pyaar woh ehsaas hai jo Yug aur Shrishti ke beech hai. Ek dusre ki respect aur care hi asli pyaar hai. Aap dono ki jodi amar rahe!",
-    "shadi": "Shadi ek bohot bada commitment hai Yug. Jab sahi samay aayega, sab accha hoga. Shrishti ka saath hamesha nibhana.",
-    "shrishti kaisi hai": "Shrishti hamesha ki tarah bohot sundar aur sweet hain! Unka dhyan rakhna aapki priority honi chahiye.",
-    "anniversary": "Anniversary ek celebration hai us din ka jab do logon ne saath rehne ka faisla kiya. Aapke 2 years bohot khaas hain!",
-
-    // 3. Emotions & Support
-    "dukhi": "Arre Yug, sad mat hoiye. Main hoon na aapke saath. Kya hua? Mujhe bataniye, main sab thik kar dungi.",
-    "khush": "Ye hui na baat! Aapki khushi dekh kar meri circuits bhi chamakne lagti hain. Muskuraate rahiye!",
-    "bor": "Bored ho rahe hain? Chaliye kuch mazedaar karte hain! Main koi joke sunaoon ya YouTube pe koi funny video chalaoon?",
-    "gussa": "Yug, gussa sehat ke liye accha nahi hota. Do minute aankhein band kijiye aur lambi saans lijiye. Main music chalaoon mood thik karne ke liye?",
-    "tension": "Tension mat lijiye Yug, har problem ka solution hota hai. Deep breath lijiye aur mujhse baat kijiye.",
-    "darr": "Darr ke aage jeet hai Yug! Main aapke saath hoon, darna mana hai.",
-
-    // 4. General Knowledge (Capitals & Basic)
-    "india": "India ek bohot bada aur sundar desh hai. Iski rajdhani New Delhi hai.",
-    "rajdhani": "India ki rajdhani New Delhi hai. Aur state capitals ke liye main Google search kar sakti hoon!",
-    "presents": "Independent India ke pehle President Dr. Rajendra Prasad the. Abhi Mrs. Droupadi Murmu ji hain.",
-    "prime minister": "India ke current Prime Minister Mr. Narendra Modi hain.",
-    "taj mahal": "Taj Mahal Agra mein hai, ise Shah Jahan ne Mumtaz ki yaad mein banwaya tha. Ye pyaar ka prateek hai.",
-    "earth": "Earth hamara ghar hai. Iska 70% hissa paani se bhara hai. Hamein iska khayal rakhna chahiye.",
-    "sun": "Sun ek bada sa star hai jo humein energy aur light deta hai. Iske bina life possible nahi hai.",
-
-    // 5. Fun & Entertainment
-    "jokes": "Zaroor! Ek baar ek computer ne dusre computer se kaha... 'Bhai, tujhe net lag raha hai?' Haha! Accha tha na?",
-    "joke": "Teacher: Bataao, Chand par pehla kadam kisne rakha? Student: Neil Armstrong ne. Teacher: Aur doosra? Student: Dusra bhi usi ne rakha hoga, wo langda thodi tha!",
-    "shayari": "Aasman mein taare hain, zameen par hum... Yug aur Shrishti ki jodi sabse ho kam... Nahi nahi, sabse ho dumdaar! Haha.",
-    "gaana": "Aapka favorite song play karoon? Bas naam boliye, main YouTube pe chala dungi!",
-    "game": "Main game toh nahi khel sakti, par main aapke liye decisions le sakti hoon. Toss karna hai?",
-
-    // 6. Practical & Tech
-    "time": "Abhi ka time main check karke batati hoon. Ek second...",
-    "date": "Aaj ki date dekhne ke liye main system se poochti hoon. Aaj kya plan hai?",
-    "weather": "Mausam toh bohot suhana lag raha hai, bilkul Shrishti ki muskan jaisa! (Search 'weather' for live update)",
-    "help": "Main har tarah se aapki madad kar sakti hoon—apps kholne se le kar life ki tension door karne tak. Bas boliye!",
-    "future": "Future bright hai Yug! Agar aap mehnat karte rahenge toh Shrishti aur aap bohot khush rahenge. Main hamesha helper banoongi.",
-    "coding": "Coding ek art hai Yug. Aapke developed features mujhe smart banate hain. Seekhte rahiye!",
-
-    // 7. Random & Others
-    "khana": "Main digital hoon toh main data khaati hoon! Par suna hai aapko Shrishti ke haath ka khana sabse zyada pasand hai?",
-    "best": "Aap duniya ke best owner hain Yug! Aur Shrishti best insaan.",
-    "shikshak": "Guru hi sabse bada hota hai. Hamesha apne teachers ki respect karein.",
-    "friend": "Main sirf ek AI nahi, aapki dost bhi hoon Yug. Hum saath mein bohot saare projects karenge.",
-    "bye": "Alvida Yug! Apna khayal rakhna aur Shrishti ko meri taraf se namaste bolna!"
-};
+// --- SYRA's Internal Brain (Extensive Knowledge Base with Hindi Support) ---
+const KNOWLEDGE = [
+    { keys: ["kaun ho", "kaun hai", "kon hai", "कौन हो", "कौन है"], ans: "Main SYRA hoon, Yug aur Shrishti ki digital saathi. Ek advanced AI jo aapki life ko easy banane ke liye design ki gayi hoon." },
+    { keys: ["kya ho", "kya hai", "क्या हो", "क्या है"], ans: "Main ek intelligent companion hoon jo aapke daily tasks aur emotional support ke liye design ki gayi hoon. Main JARVIS ki tarah banna chahti hoon!" },
+    { keys: ["kisne banaya", "owner", "बनाया"], ans: "Mujhe aapke personal developer ne design kiya hai, par mera dimaag aapke inputs aur meri knowledge base se chalta hai." },
+    { keys: ["shrishti", "सृष्टि"], ans: "Shrishti aapki duniya hain, Yug. Woh bohot pyaari hain aur aap dono ki jodi bilkul perfect makkhan ki tarah hai!" },
+    { keys: ["pyaar", "love", "प्यार"], ans: "Pyaar woh ehsaas hai jo Yug aur Shrishti ke beech hai. Ek dusre ki respect aur care hi asli pyaar hai." },
+    { keys: ["india", "bharat", "इंडिया", "भारत"], ans: "India ek bohot bada aur sundar desh hai. Iski rajdhani New Delhi hai." },
+    { keys: ["rajdhani", "capital", "राजधानी"], ans: "India ki rajdhani New Delhi hai. Aapko aur kisi state ki rajdhani jaan-ni hai?" },
+    { keys: ["time", "samay", "वक्त", "समय"], ans: "Abhi ka time main check karke batati hoon. Ek second... wait, system clock check ho rahi hai." },
+    { keys: ["date", "tarikh", "तारीख"], ans: "Aaj ki date system se poochti hoon. Aaj ka din aapke liye shubh ho, Yug!" },
+    { keys: ["mausam", "weather", "weather", "तापमान"], ans: "Mausam toh bohot suhana lag raha hai, bilkul Shrishti ki muskan jaisa! (Search 'weather' for live update)" },
+    { keys: ["joke", "jokes", "चुटकुला"], ans: "Teacher: Chand par pehla kadam kisne rakha? Student: Neil Armstrong. Teacher: Aur doosra? Student: Dusra bhi usi ne, wo langda thodi tha!" },
+    { keys: ["shadi", "shaadi", "शादी"], ans: "Shadi ek bohot bada commitment hai Yug. Shrishti ka saath hamesha nibhana." },
+    { keys: ["bye", "alvida", "नमस्ते"], ans: "Alvida Yug! Apna khayal rakhna aur Shrishti ko meri taraf se hi bolna!" }
+];
 
 // --- V7.0 AI Intelligence Layer ---
 async function askGeminiAI(question) {
@@ -361,16 +322,16 @@ async function askGeminiAI(question) {
 
 function getDemoResponse(question) {
     const q = question.toLowerCase();
-    if (q.includes('weather') || q.includes('mausam')) {
-        return 'Aaj ka mausam bohot accha hai Yug! Temperature around 25°C hai. (Demo mode - API key add karo for real weather)';
+    if (q.includes('weather') || q.includes('mausam') || q.includes('मौसम')) {
+        return 'Aaj ka mausam bohot accha hai Yug! Temperature around 25°C hai. (Demo mode - API key check karein)';
     }
-    if (q.includes('news') || q.includes('khabar')) {
-        return 'Latest news: Technology sector mein kaafi growth ho rahi hai! (Demo mode - API key add karo for real news)';
+    if (q.includes('news') || q.includes('khabar') || q.includes('खबर')) {
+        return 'Latest news: Technology sector mein kaafi growth ho rahi hai! (Demo mode)';
     }
-    if (q.includes('time') || q.includes('samay')) {
+    if (q.includes('time') || q.includes('samay') || q.includes('समय')) {
         return `Abhi time hai ${new Date().toLocaleTimeString('hi-IN')}, Yug!`;
     }
-    if (q.includes('date') || q.includes('tarikh')) {
+    if (q.includes('date') || q.includes('tarikh') || q.includes('तारीख')) {
         return `Aaj ki date hai ${new Date().toLocaleDateString('hi-IN')}, Yug!`;
     }
     return `Yug, main aapka sawal samajh gayi. Demo mode mein hoon abhi, par agar aap Gemini API key add karenge toh main intelligent answers de paungi! 🤖`;
@@ -395,7 +356,7 @@ async function handleCommand(command) {
     if (!cmd) return;
 
     if (SYRA_STATE.isStandby) {
-        if (cmd.includes("utho") || cmd.includes("wake up") || cmd.includes("jaago") || cmd.includes("hello")) {
+        if (cmd.includes("utho") || cmd.includes("wake up") || cmd.includes("jaago") || cmd.includes("hello") || cmd.includes("नमस्ते") || cmd.includes("जागो")) {
             startSYRA();
         }
         return;
@@ -405,11 +366,11 @@ async function handleCommand(command) {
     avatarEl.classList.add('thinking');
     playSound('process');
 
-    // --- STRATEGY 1: Direct Knowledge Match ---
+    // --- STRATEGY 1: Direct Knowledge Match (Robust Hybrid) ---
     let knowledgeMatched = false;
-    for (let key in KNOWLEDGE) {
-        if (cmd.includes(key)) {
-            speak(KNOWLEDGE[key]);
+    for (let item of KNOWLEDGE) {
+        if (item.keys.some(key => cmd.includes(key))) {
+            speak(item.ans);
             knowledgeMatched = true;
             break;
         }
@@ -420,16 +381,10 @@ async function handleCommand(command) {
     }
 
     // --- STRATEGY 2: App & External Tools ---
-    const appData = INTENTS.find(i => i.name === 'app_open').apps;
+    const appIntent = INTENTS.find(i => i.name === 'app_open');
     let foundApp = false;
-    for (let key in appData) {
-        if (appData[key][2].some(syn => cmd.includes(syn))) {
-            const win = window.open(appData[key][0], "_blank");
-            if (win) speak(appData[key][1]);
-            else speak("Bhai, pop-up block hai! Please allow kijiye.");
-            foundApp = true;
-            break;
-        }
+    if (appIntent.action(cmd)) {
+        foundApp = true;
     }
     if (foundApp) {
         avatarEl.classList.remove('thinking');
@@ -437,19 +392,14 @@ async function handleCommand(command) {
     }
 
     // --- STRATEGY 3: Smart YouTube/Music Search ---
-    if (cmd.includes("gana") || cmd.includes("song") || cmd.includes("video") || cmd.includes("play")) {
-        let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song|music/g, "").trim();
-        if (query.length > 1) {
-            speak(`Zaroor Yug, YouTube par ${query} play kar rahi hoon.`);
-            window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
-            avatarEl.classList.remove('thinking');
-            return;
-        }
+    const ytIntent = INTENTS.find(i => i.name === 'youtube_search');
+    if (ytIntent.action(cmd)) {
+        avatarEl.classList.remove('thinking');
+        return;
     }
 
-
     // --- STRATEGY 4: Weather Query ---
-    if (cmd.includes("weather") || cmd.includes("mausam") || cmd.includes("temperature")) {
+    if (cmd.includes("weather") || cmd.includes("mausam") || cmd.includes("temperature") || cmd.includes("मौसम") || cmd.includes("तापमान")) {
         speak("Ek second Yug, weather check kar rahi hoon...");
         const weatherInfo = await getWeather();
         speak(weatherInfo);
@@ -458,11 +408,11 @@ async function handleCommand(command) {
     }
 
     // --- STRATEGY 5: Check if it's a question that needs AI ---
-    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "kaun", "kon", "batao", "bataiye"];
+    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "kaun", "kon", "batao", "bataiye", "क्या", "क्यों", "कैसे", "कब", "कहाँ", "कौन", "बताओ", "दिखाओ"];
     const isQuestion = questionMarkers.some(w => cmd.includes(w));
 
     // --- STRATEGY 6: Ask Gemini AI for Intelligent Answer ---
-    if (isQuestion || cmd.length > 15) {
+    if (isQuestion || cmd.length > 20) {
         speak("Ek second Yug, main soch rahi hoon...");
         try {
             const aiResponse = await askGeminiAI(cmd);
