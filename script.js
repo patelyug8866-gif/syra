@@ -82,15 +82,18 @@ function speak(text, withFillers = true) {
 
     window.speechSynthesis.cancel();
 
-    utterance.onstart = () => { avatarEl.innerText = avatarEmojis.speaking; };
+    utterance.onstart = () => {
+        avatarEl.classList.add('speaking');
+        avatarEl.classList.remove('thinking');
+    };
     utterance.onend = () => {
         isSpeaking = false;
-        avatarEl.innerText = SYRA_STATE.isStandby ? avatarEmojis.sleeping : avatarEmojis.active;
+        avatarEl.classList.remove('speaking');
         if (recognition && !SYRA_STATE.isStandby) setTimeout(() => { try { recognition.start(); } catch (e) { } }, 600);
     };
 
     window.speechSynthesis.speak(utterance);
-    responseText.innerText = text; // Show clean text in UI
+    responseText.innerText = text;
 }
 
 // --- Speech Recognition (Fixed for all devices) ---
@@ -102,7 +105,7 @@ function debugLog(msg) {
     console.log("SYRA DEBUG:", msg);
     const logEl = document.getElementById('debug-log');
     if (logEl) {
-        logEl.innerHTML = `<b style="color:#00ffff; border:1px solid #00ffff; padding:2px 5px; border-radius:3px;">V3.5 EMOTION</b> ${msg}`;
+        logEl.innerHTML = `<b style="color:#ff00ff; border:1px solid #ff00ff; padding:2px 5px; border-radius:3px;">V4.0 CHAR</b> ${msg}`;
         logEl.style.display = 'block';
         logEl.style.background = 'rgba(0, 255, 255, 0.1)';
         logEl.style.padding = '10px';
@@ -274,64 +277,64 @@ function handleCommand(command) {
     }
 
     mainHint.innerText = `Recognized: "${command}"`;
-    avatarEl.innerText = avatarEmojis.thinking;
+    avatarEl.classList.add('thinking');
     playSound('process');
 
-    // --- STRATEGY 1: Emotional Detection ---
-    if (cmd.includes("dukhi") || cmd.includes("sad") || cmd.includes("tension") || cmd.includes("pareshan")) {
-        SYRA_STATE.userMood = 'sad';
-        speak(KNOWLEDGE["dukhi"]);
-        return;
-    }
-    if (cmd.includes("khush") || cmd.includes("happy") || cmd.includes("mazza")) {
-        SYRA_STATE.userMood = 'happy';
-        speak(KNOWLEDGE["khush"]);
-        return;
-    }
-
-    // --- STRATEGY 2: Direct Knowledge (Internal Talk) ---
-    for (let key in KNOWLEDGE) {
-        if (cmd.includes(key)) {
-            speak(KNOWLEDGE[key]);
-            return;
-        }
-    }
-
-    // --- STRATEGY 3: Direct App Match (Aggressive) ---
+    // --- SUPER-STRATEGY 1: Direct App & Multi-Word Logic ---
     const appData = INTENTS.find(i => i.name === 'app_open').apps;
+    let foundApp = false;
     for (let key in appData) {
+        // Match even if the app name is just MENTIONED anywhere
         if (appData[key][2].some(syn => cmd.includes(syn))) {
             const win = window.open(appData[key][0], "_blank");
             if (win) {
                 speak(appData[key][1]);
             } else {
-                speak("Bhai, pop-up block hai! Bar-bar yahi problem ho rahi hai. Please link ke upar wale lock icon se pop-ups allow kijiye.");
-                debugLog("POPUP BLOCKED - PLEASE ALLOW");
+                speak("Bhai, pop-up block hai! Please allow kijiye screen ke upar se.");
             }
+            foundApp = true;
+            break;
+        }
+    }
+    if (foundApp) {
+        avatarEl.classList.remove('thinking');
+        return;
+    }
+
+    // --- SUPER-STRATEGY 2: Social/Emotional Brain ---
+    for (let key in KNOWLEDGE) {
+        if (cmd.includes(key)) {
+            speak(KNOWLEDGE[key]);
+            avatarEl.classList.remove('thinking');
             return;
         }
     }
 
-    // --- STRATEGY 4: Intent Search Actions ---
-    for (let intent of INTENTS) {
-        if (intent.name !== 'app_open' && intent.keywords.some(k => cmd.includes(k))) {
-            if (intent.action(cmd)) return;
+    // --- SUPER-STRATEGY 3: Smart YouTube Search ---
+    if (cmd.includes("gana") || cmd.includes("song") || cmd.includes("video") || cmd.includes("play") || cmd.includes("music")) {
+        let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song|music/g, "").trim();
+        if (query.length > 1) {
+            speak(`Zaroor Yug, YouTube par ${query} play kar rahi hoon.`);
+            window.open(`https://www.youtube.com/results?search_query=${query}`, '_blank');
+            avatarEl.classList.remove('thinking');
+            return;
         }
     }
 
-    // --- STRATEGY 5: Ultimate Deep Google Search (Only for real questions) ---
-    if (cmd.length > 5 && (cmd.includes("kya") || cmd.includes("kon") || cmd.includes("kaise") || cmd.includes("where") || cmd.includes("how") || cmd.includes("search") || cmd.includes("dhundo"))) {
-        speak(`Okay Yug, mujhe iske baare mein exact nahi pata, par main Google se pooch rahi hoon.`);
+    // --- SUPER-STRATEGY 4: Ultimate Google Question Fallback ---
+    // If command looks like a question or is long enough
+    if (cmd.length > 4) {
+        speak(`Iska jawab main Google par dhoonti hoon.`);
         setTimeout(() => {
             window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
         }, 2000);
     }
     else {
-        speak("Hmm... Yug, maine suna par main koi match nahi dhoond paayi. Kya aap kuch aur batana chahenge?");
+        speak("Hmm... Yug, ek baar phir se bataiye, main samajh nahi paayi.");
     }
 
     setTimeout(() => {
         playSound('complete');
-        if (!SYRA_STATE.isStandby) avatarEl.innerText = avatarEmojis.active;
+        avatarEl.classList.remove('thinking');
     }, 2500);
 }
