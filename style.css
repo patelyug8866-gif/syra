@@ -63,46 +63,63 @@ body {
     animation-duration: 10s;
 }
 
-/* --- V4.0 Cartoon Character Engine --- */
+/* --- V5.0 STANDING CHARACTER ENGINE --- */
 .avatar-container {
-    width: 220px;
-    height: 220px;
-    background: transparent;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 300px;
+    height: 100%;
     position: relative;
-    z-index: 2;
-    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.5s ease;
 }
 
+/* Character Body Structure */
 .character {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
     background: #ffe0bd;
-    /* Skin tone */
-    border-radius: 50% 50% 45% 45%;
+    border-radius: 50% 50% 48% 48%;
     position: relative;
     border: 4px solid #333;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    animation: float 4s ease-in-out infinite;
+    z-index: 5;
+    animation: headSway 6s ease-in-out infinite;
 }
 
-.hair-top {
-    position: absolute;
-    width: 110%;
-    height: 60%;
-    background: #222;
-    top: -10%;
-    left: -5%;
+.body-torso {
+    width: 250px;
+    height: 300px;
+    background: #a87ebf;
+    /* Classy purple suit/top */
     border-radius: 100px 100px 20px 20px;
+    margin-top: -60px;
+    border: 4px solid #333;
+    position: relative;
+    z-index: 4;
+    animation: breathing 4s ease-in-out infinite;
+}
+
+.torso-detail {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 30%, rgba(255, 255, 255, 0.1) 100%);
+    border-radius: inherit;
+}
+
+.hair-long {
+    position: absolute;
+    width: 220px;
+    height: 280px;
+    background: #222;
+    top: -20px;
+    border-radius: 100px 100px 80px 80px;
     z-index: 1;
 }
 
 .eye {
     position: absolute;
-    width: 25px;
-    height: 35px;
+    width: 30px;
+    height: 40px;
     background: white;
     border-radius: 50%;
     top: 35%;
@@ -111,38 +128,78 @@ body {
 }
 
 .eye.left {
-    left: 25%;
+    left: 22%;
 }
 
 .eye.right {
-    right: 25%;
+    right: 22%;
 }
 
 .pupil {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     background: #333;
     border-radius: 50%;
-    margin: 10px auto;
-    position: relative;
+    margin: 12px auto;
 }
 
-.pupil::after {
-    content: '';
+.mouth {
     position: absolute;
-    width: 4px;
-    height: 4px;
-    background: white;
-    border-radius: 50%;
-    top: 2px;
-    left: 2px;
+    width: 35px;
+    height: 12px;
+    background: #ff708e;
+    bottom: 22%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 5px 5px 15px 15px;
+    border: 2px solid #333;
+}
+
+/* Animations */
+@keyframes breathing {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+}
+
+@keyframes headSway {
+
+    0%,
+    100% {
+        transform: rotate(-2deg);
+    }
+
+    50% {
+        transform: rotate(2deg);
+    }
+}
+
+.speaking .mouth {
+    animation: talkActive 0.25s infinite alternate;
+}
+
+@keyframes talkActive {
+    from {
+        height: 5px;
+    }
+
+    to {
+        height: 25px;
+        border-radius: 20px;
+    }
 }
 
 .blinking .eye {
-    animation: blink 4s infinite;
+    animation: eyeBlink 5s infinite;
 }
 
-@keyframes blink {
+@keyframes eyeBlink {
 
     0%,
     90%,
@@ -155,49 +212,14 @@ body {
     }
 }
 
-.mouth {
-    position: absolute;
-    width: 30px;
-    height: 15px;
-    border-radius: 0 0 15px 15px;
-    background: #ff708e;
-    bottom: 20%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 2px solid #333;
-    transition: all 0.2s;
+.thinking {
+    filter: brightness(1.1);
 }
 
-.speaking .mouth {
-    animation: talk 0.3s infinite alternate;
-}
-
-@keyframes talk {
-    from {
-        height: 5px;
-        border-radius: 5px;
-    }
-
-    to {
-        height: 25px;
-        border-radius: 15px;
-    }
-}
-
-.thinking .eye {
-    transform: translateY(-5px) rotate(-10deg);
-}
-
-@keyframes float {
-
-    0%,
-    100% {
-        transform: translateY(0);
-    }
-
-    50% {
-        transform: translateY(-10px);
-    }
+.standby .character,
+.standby .body-torso {
+    filter: grayscale(0.5) contrast(0.8);
+    opacity: 0.7;
 }
 
 .avatar-container:hover {

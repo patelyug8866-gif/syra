@@ -105,7 +105,7 @@ function debugLog(msg) {
     console.log("SYRA DEBUG:", msg);
     const logEl = document.getElementById('debug-log');
     if (logEl) {
-        logEl.innerHTML = `<b style="color:#ff00ff; border:1px solid #ff00ff; padding:2px 5px; border-radius:3px;">V4.0 CHAR</b> ${msg}`;
+        logEl.innerHTML = `<b style="color:#ffffff; border:1px solid #ffffff; padding:2px 5px; border-radius:3px; background:#a87ebf;">V5.0 STAND</b> ${msg}`;
         logEl.style.display = 'block';
         logEl.style.background = 'rgba(0, 255, 255, 0.1)';
         logEl.style.padding = '10px';
