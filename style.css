@@ -58,155 +58,156 @@ body {
 }
 
 .avatar-wrapper.standby .inner-ring {
-    border
+    border-left: 2px solid var(--amber-color);
+    border-right: 2px solid var(--amber-color);
+}
 
-    /* --- V6.0 IMAGE AVATAR ENGINE --- */
-    .avatar-wrapper {
-        width: 100%;
-        height: auto;
-        max-height: 500px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-end;
-        overflow: visible;
+/* --- V6.0 IMAGE AVATAR ENGINE --- */
+.avatar-wrapper {
+    width: 100%;
+    height: auto;
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    overflow: visible;
+    position: relative;
+    padding-top: 50px;
+}
+
+.avatar-image-container {
+    width: 320px;
+    height: 400px;
+    background-image: url('avatar.png');
+    background-size: cover;
+    background-position: center;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    border: 5px solid rgba(255, 255, 255, 0.1);
+    position: relative;
+    z-index: 5;
+    animation: gentleSway 5s ease-in-out infinite;
+    transition: all 0.5s ease;
+}
+
+.speaking .avatar-image-container {
+    transform: scale(1.02);
+    border-color: #ff8fb1;
+    box-shadow: 0 0 40px rgba(255, 143, 177, 0.6);
+}
+
+.thinking .avatar-image-container {
+    filter: brightness(1.2) contrast(1.1);
+}
+
+@keyframes gentleSway {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(-1deg);
     }
 
-    .avatar-image-container {
-        width: 320px;
-        height: 400px;
-        background-image: url('avatar.png');
-        background-size: cover;
-        background-position: center;
-        border-radius: 20px;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
-        border: 5px solid rgba(255, 255, 255, 0.1);
-        position: relative;
-        z-index: 5;
-        animation: gentleSway 5s ease-in-out infinite;
-        transition: all 0.5s ease;
+    50% {
+        transform: translateY(-10px) rotate(1deg);
+    }
+}
+
+.arc-rings {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.ring {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    border: 2px solid transparent;
+}
+
+.outer-ring {
+    width: 380px;
+    height: 380px;
+    border-top: 2px solid var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+    animation: ring-spin 4s linear infinite;
+    opacity: 0.3;
+}
+
+.inner-ring {
+    width: 340px;
+    height: 340px;
+    border-left: 2px solid var(--accent-color);
+    border-right: 2px solid var(--accent-color);
+    animation: ring-spin-reverse 3s linear infinite;
+    opacity: 0.2;
+}
+
+/* Glassmorphism Info Panel */
+.info-panel {
+    margin-top: 40px;
+    text-align: center;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    padding: 25px 50px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+    max-width: 80%;
+}
+
+#ai-status {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    letter-spacing: 5px;
+    margin-bottom: 10px;
+}
+
+#response-text {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    min-height: 1.5em;
+}
+
+#main-hint {
+    margin-top: 15px;
+    font-size: 0.9rem;
+    color: var(--accent-color);
+    opacity: 0.8;
+}
+
+/* Decorations */
+.decorations .circle {
+    position: absolute;
+    background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
+    opacity: 0.1;
+}
+
+/* Animations */
+@keyframes ring-spin {
+    from {
+        transform: translate(-50%, -50%) rotate(0deg);
     }
 
-    .speaking .avatar-image-container {
-        transform: scale(1.02);
-        border-color: #ff8fb1;
-        box-shadow: 0 0 30px rgba(255, 143, 177, 0.4);
+    to {
+        transform: translate(-50%, -50%) rotate(360deg);
+    }
+}
+
+@keyframes ring-spin-reverse {
+    from {
+        transform: translate(-50%, -50%) rotate(360deg);
     }
 
-    .thinking .avatar-image-container {
-        filter: brightness(1.2) contrast(1.1);
+    to {
+        transform: translate(-50%, -50%) rotate(0deg);
     }
-
-    @keyframes gentleSway {
-
-        0%,
-        100% {
-            transform: translateY(0) rotate(-1deg);
-        }
-
-        50% {
-            transform: translateY(-10px) rotate(1deg);
-        }
-    }
-
-    .avatar-container:hover {
-        transform: scale(1.05) rotateY(10deg);
-    }
-
-    .arc-rings {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-    }
-
-    .ring {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        border-radius: 50%;
-        border: 2px solid transparent;
-    }
-
-    .outer-ring {
-        width: 250px;
-        height: 250px;
-        border-top: 2px solid var(--primary-color);
-        border-bottom: 2px solid var(--primary-color);
-        animation: ring-spin 4s linear infinite;
-        transition: all 0.5s ease;
-    }
-
-    .inner-ring {
-        width: 220px;
-        height: 220px;
-        border-left: 2px solid var(--accent-color);
-        border-right: 2px solid var(--accent-color);
-        animation: ring-spin-reverse 3s linear infinite;
-        transition: all 0.5s ease;
-    }
-
-    /* Glassmorphism Info Panel */
-    .info-panel {
-        margin-top: 40px;
-        text-align: center;
-        background: var(--card-bg);
-        backdrop-filter: blur(10px);
-        padding: 25px 50px;
-        border-radius: 20px;
-        border: 1px solid rgba(255, 255, 255, 0.3);
-        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-        max-width: 80%;
-    }
-
-    #ai-status {
-        font-family: 'Orbitron', sans-serif;
-        font-size: 1.2rem;
-        color: var(--primary-color);
-        letter-spacing: 5px;
-        margin-bottom: 10px;
-    }
-
-    #response-text {
-        font-size: 1.1rem;
-        color: var(--text-color);
-        min-height: 1.5em;
-    }
-
-    #main-hint {
-        margin-top: 15px;
-        font-size: 0.9rem;
-        color: var(--accent-color);
-        opacity: 0.8;
-    }
-
-    /* Decorations */
-    .decorations .circle {
-        position: absolute;
-        background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
-        border-radius: 50%;
-        filter: blur(40px);
-        opacity: 0.1;
-    }
-
-    /* Animations */
-    @keyframes ring-spin {
-        from {
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-
-        to {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-    }
-
-    @keyframes ring-spin-reverse {
-        from {
-            transform: translate(-50%, -50%) rotate(360deg);
-        }
-
-        to {
-            transform: translate(-50%, -50%) rotate(0deg);
-        }
-    }
+}

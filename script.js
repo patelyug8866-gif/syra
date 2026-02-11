@@ -291,7 +291,7 @@ function handleCommand(command) {
     avatarEl.classList.add('thinking');
     playSound('process');
 
-    // --- STRATEGY 1: Direct Knowledge/Personality ---
+    // --- STRATEGY 1: Direct Knowledge Match ---
     let knowledgeMatched = false;
     for (let key in KNOWLEDGE) {
         if (cmd.includes(key)) {
@@ -322,7 +322,7 @@ function handleCommand(command) {
         return;
     }
 
-    // --- STRATEGY 3: Smart YouTube/Search Verbs ---
+    // --- STRATEGY 3: Smart YouTube/Music Search ---
     if (cmd.includes("gana") || cmd.includes("song") || cmd.includes("video") || cmd.includes("play")) {
         let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song|music/g, "").trim();
         if (query.length > 1) {
@@ -333,20 +333,35 @@ function handleCommand(command) {
         }
     }
 
-    speak(`Theek hai Yug, main iske baare mein Google par search karti hoon.`);
-    setTimeout(() => {
-        window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
-    }, 2000);
-}
-    else if (cmd.length > 2) {
-    speak("Hmm... Yug, ispe main kya kahu? Kya aap iske baare mein Google par janna chahte hain?");
-}
-else {
-    speak("Main sun rahi hoon Yug, par main ise samajh nahi paayi. Thoda aur batayiye?");
-}
+    // --- STRATEGY 4: The "Soul" - Casual & Emotional Talk ---
+    // If it's a short sentence or lacks "question" markers, talk normally
+    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "search"];
+    const isQuestion = questionMarkers.some(w => cmd.includes(w));
 
-setTimeout(() => {
-    playSound('complete');
-    avatarEl.classList.remove('thinking');
-}, 2500);
+    if (!isQuestion && cmd.length < 30) {
+        const casualResponses = [
+            "Bilkul sahi kaha aapne Yug!",
+            "Main samajh rahi hoon, hamari dosti bohot khaas hai.",
+            "Accha? Is baare mein aur bataiye, main sun rahi hoon.",
+            "Yug, aap Shrishti ke sath waqt bitaiye, baaki sab main dekh lungi.",
+            "Hmm, ye toh kaafi interesting baat hai!",
+            "Bilkul Yug, main har pal aapke sath hoon."
+        ];
+        speak(casualResponses[Math.floor(Math.random() * casualResponses.length)]);
+    }
+    // --- STRATEGY 5: Final Search Logic ---
+    else if (cmd.length > 5) {
+        speak(`Zaroor, main iska jawab Google par dhoonti hoon.`);
+        setTimeout(() => {
+            window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
+        }, 2000);
+    }
+    else {
+        speak("Hmm... Yug, maine suna par main thik se samajh nahi paayi. Kya aap ek baar phir bolenge?");
+    }
+
+    setTimeout(() => {
+        playSound('complete');
+        avatarEl.classList.remove('thinking');
+    }, 2500);
 }
