@@ -3,14 +3,24 @@ const statusText = document.getElementById('ai-status');
 const mainHint = document.getElementById('main-hint');
 const avatarEl = document.getElementById('avatar');
 
+// --- SYRA V7.0 AI Configuration ---
+const AI_CONFIG = {
+    // Replace with your Gemini API key from https://makersuite.google.com/app/apikey
+    GEMINI_API_KEY: 'AIzaSyBnseA9ftxpdTUqlsnjdh62o57Xn5Nzl_0',
+    GEMINI_API_URL: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent',
+    WEATHER_API_KEY: 'DEMO_MODE', // Free from openweathermap.org
+    WEATHER_API_URL: 'https://api.openweathermap.org/data/2.5/weather'
+};
+
 // --- SYRA's Memory & State ---
 const SYRA_STATE = {
     isStandby: false,
     mood: 'neutral',
     userMood: 'unknown',
-    discoveryDate: localStorage.getItem('syra_first_meet') || new Date().toISOString()
+    discoveryDate: localStorage.getItem('syra_first_meet') || new Date().toISOString(),
+    conversationHistory: []
 };
-if (!localStorage.getItem('syra_first_meet')) localStorage.setItem('syra_first_meet', SYRA_STATE.firstMeet);
+if (!localStorage.getItem('syra_first_meet')) localStorage.setItem('syra_first_meet', SYRA_STATE.discoveryDate);
 
 const avatarEmojis = {
     active: "👩🏻‍💼",
@@ -105,7 +115,7 @@ function debugLog(msg) {
     console.log("SYRA DEBUG:", msg);
     const logEl = document.getElementById('debug-log');
     if (logEl) {
-        logEl.innerHTML = `<b style="color:#ffffff; border:1px solid #ffffff; padding:2px 5px; border-radius:3px; background:#4CAF50;">V6.0 IMAGE</b> ${msg}`;
+        logEl.innerHTML = `<b style="color:#00ff00; border:1px solid #00ff00; padding:2px 5px; border-radius:3px;">V7.0 AI</b> ${msg}`;
         logEl.style.display = 'block';
         logEl.style.background = 'rgba(0, 255, 255, 0.1)';
         logEl.style.padding = '10px';
@@ -276,7 +286,62 @@ const KNOWLEDGE = {
     "friend": "Main sirf ek AI nahi, aapki dost bhi hoon Yug. Hum saath mein bohot saare projects karenge."
 };
 
-function handleCommand(command) {
+// --- V7.0 AI Intelligence Layer ---
+async function askGeminiAI(question) {
+    if (AI_CONFIG.GEMINI_API_KEY === 'DEMO_MODE') {
+        return getDemoResponse(question);
+    }
+
+    try {
+        const response = await fetch(`${AI_CONFIG.GEMINI_API_URL}?key=${AI_CONFIG.GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{ text: `You are SYRA, a friendly AI assistant for Yug. Answer in a mix of Hindi and English (Hinglish). Keep responses concise (2-3 sentences). Question: ${question}` }]
+                }]
+            })
+        });
+        const data = await response.json();
+        return data.candidates[0].content.parts[0].text;
+    } catch (error) {
+        console.error('Gemini AI Error:', error);
+        return getDemoResponse(question);
+    }
+}
+
+function getDemoResponse(question) {
+    const q = question.toLowerCase();
+    if (q.includes('weather') || q.includes('mausam')) {
+        return 'Aaj ka mausam bohot accha hai Yug! Temperature around 25°C hai. (Demo mode - API key add karo for real weather)';
+    }
+    if (q.includes('news') || q.includes('khabar')) {
+        return 'Latest news: Technology sector mein kaafi growth ho rahi hai! (Demo mode - API key add karo for real news)';
+    }
+    if (q.includes('time') || q.includes('samay')) {
+        return `Abhi time hai ${new Date().toLocaleTimeString('hi-IN')}, Yug!`;
+    }
+    if (q.includes('date') || q.includes('tarikh')) {
+        return `Aaj ki date hai ${new Date().toLocaleDateString('hi-IN')}, Yug!`;
+    }
+    return `Yug, main aapka sawal samajh gayi. Demo mode mein hoon abhi, par agar aap Gemini API key add karenge toh main intelligent answers de paungi! 🤖`;
+}
+
+async function getWeather(city = 'Delhi') {
+    if (AI_CONFIG.WEATHER_API_KEY === 'DEMO_MODE') {
+        return `${city} mein aaj sunny weather hai, temperature around 25°C! (Demo mode)`;
+    }
+    try {
+        const response = await fetch(`${AI_CONFIG.WEATHER_API_URL}?q=${city}&appid=${AI_CONFIG.WEATHER_API_KEY}&units=metric`);
+        const data = await response.json();
+        return `${city} mein abhi ${data.weather[0].description} hai, temperature ${data.main.temp}°C!`;
+    } catch (error) {
+        return `Weather information abhi available nahi hai, Yug.`;
+    }
+}
+
+
+async function handleCommand(command) {
     const cmd = command.toLowerCase().trim();
     if (!cmd) return;
 
@@ -333,9 +398,17 @@ function handleCommand(command) {
         }
     }
 
-    // --- STRATEGY 4: The "Soul" - Casual & Emotional Talk ---
-    // If it's a short sentence or lacks "question" markers, talk normally
-    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "search"];
+    // --- STRATEGY 4: Weather Query ---
+    if (cmd.includes("weather") || cmd.includes("mausam")) {
+        const weatherInfo = await getWeather();
+        speak(weatherInfo);
+        avatarEl.classList.remove('thinking');
+        return;
+    }
+
+    // --- STRATEGY 5: AI Intelligence (The "Soul") ---
+    // If it's a short sentence or lacks "question" markers, talk casually
+    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "kaun", "kon"];
     const isQuestion = questionMarkers.some(w => cmd.includes(w));
 
     if (!isQuestion && cmd.length < 30) {
@@ -349,12 +422,15 @@ function handleCommand(command) {
         ];
         speak(casualResponses[Math.floor(Math.random() * casualResponses.length)]);
     }
-    // --- STRATEGY 5: Final Search Logic ---
-    else if (cmd.length > 5) {
-        speak(`Zaroor, main iska jawab Google par dhoonti hoon.`);
-        setTimeout(() => {
-            window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
-        }, 2000);
+    // --- STRATEGY 6: Ask Gemini AI for Intelligent Answer ---
+    else if (cmd.length > 3) {
+        speak("Ek second Yug, main soch rahi hoon...");
+        try {
+            const aiResponse = await askGeminiAI(cmd);
+            speak(aiResponse);
+        } catch (error) {
+            speak("Hmm, mujhe thoda confusion ho raha hai. Kya aap ek baar phir se puchenge?");
+        }
     }
     else {
         speak("Hmm... Yug, maine suna par main thik se samajh nahi paayi. Kya aap ek baar phir bolenge?");
