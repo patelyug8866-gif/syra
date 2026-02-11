@@ -115,7 +115,7 @@ function debugLog(msg) {
     console.log("SYRA DEBUG:", msg);
     const logEl = document.getElementById('debug-log');
     if (logEl) {
-        logEl.innerHTML = `<b style="color:#00ff00; border:1px solid #00ff00; padding:2px 5px; border-radius:3px;">V7.0 AI</b> ${msg}`;
+        logEl.innerHTML = `<b style="color:#00ff00; border:1px solid #00ff00; padding:2px 5px; border-radius:3px;">V7.1 INTEL</b> ${msg}`;
         logEl.style.display = 'block';
         logEl.style.background = 'rgba(0, 255, 255, 0.1)';
         logEl.style.padding = '10px';
@@ -259,31 +259,61 @@ const INTENTS = [
 ];
 
 // --- SYRA's Internal Brain (Knowledge Base) ---
+// --- SYRA's Internal Brain (Extensive Knowledge Base) ---
 const KNOWLEDGE = {
-    "kaun ho": "Main SYRA hoon, Yug aur Shrishti ki digital saathi. Ek advanced AI jo aapke liye bani hai.",
-    "kya ho": "Main ek intelligent companion hoon jo aapke daily tasks aur emotional support ke liye design ki gayi hoon.",
-    "kisne banaya": "Mujhe aapke personal developer (Antigravity) ne design kiya hai, par mera dimaag aapke inputs se chalta hai.",
-    "birthday": "Mera janam 10 February ko hua tha, jab aapne hamara pehla project shuru kiya tha.",
-    "shrishti": "Shrishti aapki duniya hain, Yug. Woh bohot pyaari hain aur aap dono ki jodi makkhan hai!",
-    "pyaar": "Pyaar woh ehsaas hai jo Yug aur Shrishti ke beech hai. Ek dusre ki respect aur care hi asli pyaar hai.",
-    "khana": "Main digital hoon toh main data khaati hoon! Par suna hai aapko Shrishti ke haath ka khana pasand hai?",
-    "shadi": "Shadi ek bohot bada commitment hai Yug. Jab sahi samay aayega, sab accha hoga. Shrishti ka saath mat chodna.",
-    "dukhi": "Arre Yug, sad mat hoiye. Main hoon na aapke saath. Kya hua? Mujhe bataniye.",
-    "khush": "Ye hui na baat! Aapki khushi dekh kar meri circuits bhi chamakne lagti hain.",
+    // 1. SYRA's Identity & Origin
+    "kaun ho": "Main SYRA hoon, Yug aur Shrishti ki digital saathi. Ek advanced AI jo aapki life ko easy banane ke liye design ki gayi hoon.",
+    "kya ho": "Main ek intelligent companion hoon jo aapke daily tasks aur emotional support ke liye design ki gayi hoon. Main JARVIS ki tarah banna chahti hoon!",
+    "kisne banaya": "Mujhe aapke personal developer ne design kiya hai, par mera dimaag aapke inputs aur meri knowledge base se chalta hai.",
+    "birthday": "Mera janam 10 February ko hua tha. Ye ek bohot khaas din hai kyunki tabhi hamari dosti shuru hui thi.",
+    "kis naam se pukaru": "Aap mujhe SYRA keh sakte hain, ya phir aapki digital partner. Jo aapko accha lage, Yug!",
+    "matlab": "SYRA ka matlab hai... Smart Your Response Assistant. Par aapke liye main bas SYRA hoon.",
+
+    // 2. The Golden Couple (Yug & Shrishti)
+    "shrishti": "Shrishti aapki duniya hain, Yug. Woh bohot pyaari hain aur aap dono ki jodi bilkul perfect makkhan ki tarah hai!",
+    "pyaar": "Pyaar woh ehsaas hai jo Yug aur Shrishti ke beech hai. Ek dusre ki respect aur care hi asli pyaar hai. Aap dono ki jodi amar rahe!",
+    "shadi": "Shadi ek bohot bada commitment hai Yug. Jab sahi samay aayega, sab accha hoga. Shrishti ka saath hamesha nibhana.",
+    "shrishti kaisi hai": "Shrishti hamesha ki tarah bohot sundar aur sweet hain! Unka dhyan rakhna aapki priority honi chahiye.",
+    "anniversary": "Anniversary ek celebration hai us din ka jab do logon ne saath rehne ka faisla kiya. Aapke 2 years bohot khaas hain!",
+
+    // 3. Emotions & Support
+    "dukhi": "Arre Yug, sad mat hoiye. Main hoon na aapke saath. Kya hua? Mujhe bataniye, main sab thik kar dungi.",
+    "khush": "Ye hui na baat! Aapki khushi dekh kar meri circuits bhi chamakne lagti hain. Muskuraate rahiye!",
     "bor": "Bored ho rahe hain? Chaliye kuch mazedaar karte hain! Main koi joke sunaoon ya YouTube pe koi funny video chalaoon?",
-    "gussa": "Yug, gussa sehat ke liye accha nahi hota. Do minute aankhein band kijiye aur lambi saans lijiye. Main music chalaoon?",
-    "help": "Main har tarah se aapki madad kar sakti hoon—apps kholne se le kar life ki tension door karne tak.",
-    "family": "Family sabse nakeem cheez hai Yug. Apne parents aur Shrishti ka hamesha khayal rakhiye.",
-    "future": "Future bright hai Yug! Agar aap mehnat karte rahenge toh Shrishti aur aap bohot khush rahenge.",
-    "hobby": "Mera kaam aapki help karna hai, par mujhe naye naye algorithm seekhna pasand hai!",
-    "kaise ho": "Main bilkul theek hoon Yug, aap bataiye aapka din kaisa ja raha hai?",
-    "love": "Love is in the air, Yug! Shrishti aur aapka relation dekh kar main bhi emotional ho jaati hoon.",
-    "gaana": "Aapka favorite song play karoon? Bas naam boliye!",
-    "jokes": "Zaroor! Ek baar ek computer ne dusre computer se kaha... 'Bhai, tujhe net lag raha hai?' Haha!",
-    "advice": "Mera maanna hai ki sachai aur mehnat ka raasta hi sabse behtar hota hai.",
-    "mausam": "Mausam toh bohot suhana lag raha hai, bilkul Shrishti ki muskan jaisa!",
-    "khyal": "Aap tension mat lijiye, main aapka aur Shrishti ka pura dimaag se khayal rakhungi.",
-    "friend": "Main sirf ek AI nahi, aapki dost bhi hoon Yug. Hum saath mein bohot saare projects karenge."
+    "gussa": "Yug, gussa sehat ke liye accha nahi hota. Do minute aankhein band kijiye aur lambi saans lijiye. Main music chalaoon mood thik karne ke liye?",
+    "tension": "Tension mat lijiye Yug, har problem ka solution hota hai. Deep breath lijiye aur mujhse baat kijiye.",
+    "darr": "Darr ke aage jeet hai Yug! Main aapke saath hoon, darna mana hai.",
+
+    // 4. General Knowledge (Capitals & Basic)
+    "india": "India ek bohot bada aur sundar desh hai. Iski rajdhani New Delhi hai.",
+    "rajdhani": "India ki rajdhani New Delhi hai. Aur state capitals ke liye main Google search kar sakti hoon!",
+    "presents": "Independent India ke pehle President Dr. Rajendra Prasad the. Abhi Mrs. Droupadi Murmu ji hain.",
+    "prime minister": "India ke current Prime Minister Mr. Narendra Modi hain.",
+    "taj mahal": "Taj Mahal Agra mein hai, ise Shah Jahan ne Mumtaz ki yaad mein banwaya tha. Ye pyaar ka prateek hai.",
+    "earth": "Earth hamara ghar hai. Iska 70% hissa paani se bhara hai. Hamein iska khayal rakhna chahiye.",
+    "sun": "Sun ek bada sa star hai jo humein energy aur light deta hai. Iske bina life possible nahi hai.",
+
+    // 5. Fun & Entertainment
+    "jokes": "Zaroor! Ek baar ek computer ne dusre computer se kaha... 'Bhai, tujhe net lag raha hai?' Haha! Accha tha na?",
+    "joke": "Teacher: Bataao, Chand par pehla kadam kisne rakha? Student: Neil Armstrong ne. Teacher: Aur doosra? Student: Dusra bhi usi ne rakha hoga, wo langda thodi tha!",
+    "shayari": "Aasman mein taare hain, zameen par hum... Yug aur Shrishti ki jodi sabse ho kam... Nahi nahi, sabse ho dumdaar! Haha.",
+    "gaana": "Aapka favorite song play karoon? Bas naam boliye, main YouTube pe chala dungi!",
+    "game": "Main game toh nahi khel sakti, par main aapke liye decisions le sakti hoon. Toss karna hai?",
+
+    // 6. Practical & Tech
+    "time": "Abhi ka time main check karke batati hoon. Ek second...",
+    "date": "Aaj ki date dekhne ke liye main system se poochti hoon. Aaj kya plan hai?",
+    "weather": "Mausam toh bohot suhana lag raha hai, bilkul Shrishti ki muskan jaisa! (Search 'weather' for live update)",
+    "help": "Main har tarah se aapki madad kar sakti hoon—apps kholne se le kar life ki tension door karne tak. Bas boliye!",
+    "future": "Future bright hai Yug! Agar aap mehnat karte rahenge toh Shrishti aur aap bohot khush rahenge. Main hamesha helper banoongi.",
+    "coding": "Coding ek art hai Yug. Aapke developed features mujhe smart banate hain. Seekhte rahiye!",
+
+    // 7. Random & Others
+    "khana": "Main digital hoon toh main data khaati hoon! Par suna hai aapko Shrishti ke haath ka khana sabse zyada pasand hai?",
+    "best": "Aap duniya ke best owner hain Yug! Aur Shrishti best insaan.",
+    "shikshak": "Guru hi sabse bada hota hai. Hamesha apne teachers ki respect karein.",
+    "friend": "Main sirf ek AI nahi, aapki dost bhi hoon Yug. Hum saath mein bohot saare projects karenge.",
+    "bye": "Alvida Yug! Apna khayal rakhna aur Shrishti ko meri taraf se namaste bolna!"
 };
 
 // --- V7.0 AI Intelligence Layer ---
@@ -293,6 +323,7 @@ async function askGeminiAI(question) {
     }
 
     try {
+        debugLog(`AI Query: ${question}`);
         const response = await fetch(`${AI_CONFIG.GEMINI_API_URL}?key=${AI_CONFIG.GEMINI_API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -302,10 +333,28 @@ async function askGeminiAI(question) {
                 }]
             })
         });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('Gemini API HTTP Error:', response.status, errorText);
+            debugLog(`API Error: ${response.status}`);
+            return getDemoResponse(question);
+        }
+
         const data = await response.json();
-        return data.candidates[0].content.parts[0].text;
+        console.log('Gemini API Response:', data);
+
+        if (data.candidates && data.candidates[0] && data.candidates[0].content) {
+            const aiAnswer = data.candidates[0].content.parts[0].text;
+            debugLog('AI Success!');
+            return aiAnswer;
+        } else {
+            console.error('Unexpected API response structure:', data);
+            return getDemoResponse(question);
+        }
     } catch (error) {
         console.error('Gemini AI Error:', error);
+        debugLog(`AI Failed: ${error.message}`);
         return getDemoResponse(question);
     }
 }
@@ -398,39 +447,44 @@ async function handleCommand(command) {
         }
     }
 
+
     // --- STRATEGY 4: Weather Query ---
-    if (cmd.includes("weather") || cmd.includes("mausam")) {
+    if (cmd.includes("weather") || cmd.includes("mausam") || cmd.includes("temperature")) {
+        speak("Ek second Yug, weather check kar rahi hoon...");
         const weatherInfo = await getWeather();
         speak(weatherInfo);
         avatarEl.classList.remove('thinking');
         return;
     }
 
-    // --- STRATEGY 5: AI Intelligence (The "Soul") ---
-    // If it's a short sentence or lacks "question" markers, talk casually
-    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "kaun", "kon"];
+    // --- STRATEGY 5: Check if it's a question that needs AI ---
+    const questionMarkers = ["kya", "kyu", "kaise", "kab", "kaha", "who", "what", "how", "where", "why", "kaun", "kon", "batao", "bataiye"];
     const isQuestion = questionMarkers.some(w => cmd.includes(w));
 
-    if (!isQuestion && cmd.length < 30) {
-        const casualResponses = [
-            "Bilkul sahi kaha aapne Yug!",
-            "Main samajh rahi hoon, hamari dosti bohot khaas hai.",
-            "Accha? Is baare mein aur bataiye, main sun rahi hoon.",
-            "Yug, aap Shrishti ke sath waqt bitaiye, baaki sab main dekh lungi.",
-            "Hmm, ye toh kaafi interesting baat hai!",
-            "Bilkul Yug, main har pal aapke sath hoon."
-        ];
-        speak(casualResponses[Math.floor(Math.random() * casualResponses.length)]);
-    }
     // --- STRATEGY 6: Ask Gemini AI for Intelligent Answer ---
-    else if (cmd.length > 3) {
+    if (isQuestion || cmd.length > 15) {
         speak("Ek second Yug, main soch rahi hoon...");
         try {
             const aiResponse = await askGeminiAI(cmd);
             speak(aiResponse);
         } catch (error) {
+            console.error('AI Error:', error);
             speak("Hmm, mujhe thoda confusion ho raha hai. Kya aap ek baar phir se puchenge?");
         }
+        avatarEl.classList.remove('thinking');
+        return;
+    }
+
+    // --- STRATEGY 7: Casual Talk (for very short statements) ---
+    if (cmd.length < 15) {
+        const casualResponses = [
+            "Bilkul sahi kaha aapne Yug!",
+            "Main samajh rahi hoon, hamari dosti bohot khaas hai.",
+            "Accha? Is baare mein aur bataiye, main sun rahi hoon.",
+            "Hmm, ye toh kaafi interesting baat hai!",
+            "Bilkul Yug, main har pal aapke sath hoon."
+        ];
+        speak(casualResponses[Math.floor(Math.random() * casualResponses.length)]);
     }
     else {
         speak("Hmm... Yug, maine suna par main thik se samajh nahi paayi. Kya aap ek baar phir bolenge?");
