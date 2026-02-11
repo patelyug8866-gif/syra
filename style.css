@@ -58,268 +58,155 @@ body {
 }
 
 .avatar-wrapper.standby .inner-ring {
-    border-left: 2px solid var(--amber-color);
-    border-right: 2px solid var(--amber-color);
-    animation-duration: 10s;
-}
+    border
 
-/* --- V5.0 STANDING CHARACTER ENGINE --- */
-.avatar-container {
-    width: 300px;
-    height: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: all 0.5s ease;
-}
-
-/* Character Body Structure */
-.character {
-    width: 180px;
-    height: 180px;
-    background: #ffe0bd;
-    border-radius: 50% 50% 48% 48%;
-    position: relative;
-    border: 4px solid #333;
-    z-index: 5;
-    animation: headSway 6s ease-in-out infinite;
-}
-
-.body-torso {
-    width: 250px;
-    height: 300px;
-    background: #a87ebf;
-    /* Classy purple suit/top */
-    border-radius: 100px 100px 20px 20px;
-    margin-top: -60px;
-    border: 4px solid #333;
-    position: relative;
-    z-index: 4;
-    animation: breathing 4s ease-in-out infinite;
-}
-
-.torso-detail {
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(to bottom, transparent 30%, rgba(255, 255, 255, 0.1) 100%);
-    border-radius: inherit;
-}
-
-.hair-long {
-    position: absolute;
-    width: 220px;
-    height: 280px;
-    background: #222;
-    top: -20px;
-    border-radius: 100px 100px 80px 80px;
-    z-index: 1;
-}
-
-.eye {
-    position: absolute;
-    width: 30px;
-    height: 40px;
-    background: white;
-    border-radius: 50%;
-    top: 35%;
-    border: 2px solid #333;
-    overflow: hidden;
-}
-
-.eye.left {
-    left: 22%;
-}
-
-.eye.right {
-    right: 22%;
-}
-
-.pupil {
-    width: 14px;
-    height: 14px;
-    background: #333;
-    border-radius: 50%;
-    margin: 12px auto;
-}
-
-.mouth {
-    position: absolute;
-    width: 35px;
-    height: 12px;
-    background: #ff708e;
-    bottom: 22%;
-    left: 50%;
-    transform: translateX(-50%);
-    border-radius: 5px 5px 15px 15px;
-    border: 2px solid #333;
-}
-
-/* Animations */
-@keyframes breathing {
-
-    0%,
-    100% {
-        transform: scale(1);
+    /* --- V6.0 IMAGE AVATAR ENGINE --- */
+    .avatar-wrapper {
+        width: 100%;
+        height: auto;
+        max-height: 500px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        overflow: visible;
     }
 
-    50% {
-        transform: scale(1.02);
-    }
-}
-
-@keyframes headSway {
-
-    0%,
-    100% {
-        transform: rotate(-2deg);
-    }
-
-    50% {
-        transform: rotate(2deg);
-    }
-}
-
-.speaking .mouth {
-    animation: talkActive 0.25s infinite alternate;
-}
-
-@keyframes talkActive {
-    from {
-        height: 5px;
-    }
-
-    to {
-        height: 25px;
+    .avatar-image-container {
+        width: 320px;
+        height: 400px;
+        background-image: url('avatar.png');
+        background-size: cover;
+        background-position: center;
         border-radius: 20px;
-    }
-}
-
-.blinking .eye {
-    animation: eyeBlink 5s infinite;
-}
-
-@keyframes eyeBlink {
-
-    0%,
-    90%,
-    100% {
-        transform: scaleY(1);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        border: 5px solid rgba(255, 255, 255, 0.1);
+        position: relative;
+        z-index: 5;
+        animation: gentleSway 5s ease-in-out infinite;
+        transition: all 0.5s ease;
     }
 
-    95% {
-        transform: scaleY(0.1);
-    }
-}
-
-.thinking {
-    filter: brightness(1.1);
-}
-
-.standby .character,
-.standby .body-torso {
-    filter: grayscale(0.5) contrast(0.8);
-    opacity: 0.7;
-}
-
-.avatar-container:hover {
-    transform: scale(1.05) rotateY(10deg);
-}
-
-.arc-rings {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.ring {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-radius: 50%;
-    border: 2px solid transparent;
-}
-
-.outer-ring {
-    width: 250px;
-    height: 250px;
-    border-top: 2px solid var(--primary-color);
-    border-bottom: 2px solid var(--primary-color);
-    animation: ring-spin 4s linear infinite;
-    transition: all 0.5s ease;
-}
-
-.inner-ring {
-    width: 220px;
-    height: 220px;
-    border-left: 2px solid var(--accent-color);
-    border-right: 2px solid var(--accent-color);
-    animation: ring-spin-reverse 3s linear infinite;
-    transition: all 0.5s ease;
-}
-
-/* Glassmorphism Info Panel */
-.info-panel {
-    margin-top: 40px;
-    text-align: center;
-    background: var(--card-bg);
-    backdrop-filter: blur(10px);
-    padding: 25px 50px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-    max-width: 80%;
-}
-
-#ai-status {
-    font-family: 'Orbitron', sans-serif;
-    font-size: 1.2rem;
-    color: var(--primary-color);
-    letter-spacing: 5px;
-    margin-bottom: 10px;
-}
-
-#response-text {
-    font-size: 1.1rem;
-    color: var(--text-color);
-    min-height: 1.5em;
-}
-
-#main-hint {
-    margin-top: 15px;
-    font-size: 0.9rem;
-    color: var(--accent-color);
-    opacity: 0.8;
-}
-
-/* Decorations */
-.decorations .circle {
-    position: absolute;
-    background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
-    border-radius: 50%;
-    filter: blur(40px);
-    opacity: 0.1;
-}
-
-/* Animations */
-@keyframes ring-spin {
-    from {
-        transform: translate(-50%, -50%) rotate(0deg);
+    .speaking .avatar-image-container {
+        transform: scale(1.02);
+        border-color: #ff8fb1;
+        box-shadow: 0 0 30px rgba(255, 143, 177, 0.4);
     }
 
-    to {
-        transform: translate(-50%, -50%) rotate(360deg);
-    }
-}
-
-@keyframes ring-spin-reverse {
-    from {
-        transform: translate(-50%, -50%) rotate(360deg);
+    .thinking .avatar-image-container {
+        filter: brightness(1.2) contrast(1.1);
     }
 
-    to {
-        transform: translate(-50%, -50%) rotate(0deg);
+    @keyframes gentleSway {
+
+        0%,
+        100% {
+            transform: translateY(0) rotate(-1deg);
+        }
+
+        50% {
+            transform: translateY(-10px) rotate(1deg);
+        }
     }
-}
+
+    .avatar-container:hover {
+        transform: scale(1.05) rotateY(10deg);
+    }
+
+    .arc-rings {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+    }
+
+    .ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid transparent;
+    }
+
+    .outer-ring {
+        width: 250px;
+        height: 250px;
+        border-top: 2px solid var(--primary-color);
+        border-bottom: 2px solid var(--primary-color);
+        animation: ring-spin 4s linear infinite;
+        transition: all 0.5s ease;
+    }
+
+    .inner-ring {
+        width: 220px;
+        height: 220px;
+        border-left: 2px solid var(--accent-color);
+        border-right: 2px solid var(--accent-color);
+        animation: ring-spin-reverse 3s linear infinite;
+        transition: all 0.5s ease;
+    }
+
+    /* Glassmorphism Info Panel */
+    .info-panel {
+        margin-top: 40px;
+        text-align: center;
+        background: var(--card-bg);
+        backdrop-filter: blur(10px);
+        padding: 25px 50px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
+        max-width: 80%;
+    }
+
+    #ai-status {
+        font-family: 'Orbitron', sans-serif;
+        font-size: 1.2rem;
+        color: var(--primary-color);
+        letter-spacing: 5px;
+        margin-bottom: 10px;
+    }
+
+    #response-text {
+        font-size: 1.1rem;
+        color: var(--text-color);
+        min-height: 1.5em;
+    }
+
+    #main-hint {
+        margin-top: 15px;
+        font-size: 0.9rem;
+        color: var(--accent-color);
+        opacity: 0.8;
+    }
+
+    /* Decorations */
+    .decorations .circle {
+        position: absolute;
+        background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.1;
+    }
+
+    /* Animations */
+    @keyframes ring-spin {
+        from {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+
+        to {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+    }
+
+    @keyframes ring-spin-reverse {
+        from {
+            transform: translate(-50%, -50%) rotate(360deg);
+        }
+
+        to {
+            transform: translate(-50%, -50%) rotate(0deg);
+        }
+    }

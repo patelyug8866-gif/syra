@@ -105,7 +105,7 @@ function debugLog(msg) {
     console.log("SYRA DEBUG:", msg);
     const logEl = document.getElementById('debug-log');
     if (logEl) {
-        logEl.innerHTML = `<b style="color:#ffffff; border:1px solid #ffffff; padding:2px 5px; border-radius:3px; background:#ff8fb1;">V5.5 EMOTION</b> ${msg}`;
+        logEl.innerHTML = `<b style="color:#ffffff; border:1px solid #ffffff; padding:2px 5px; border-radius:3px; background:#4CAF50;">V6.0 IMAGE</b> ${msg}`;
         logEl.style.display = 'block';
         logEl.style.background = 'rgba(0, 255, 255, 0.1)';
         logEl.style.padding = '10px';
@@ -291,18 +291,28 @@ function handleCommand(command) {
     avatarEl.classList.add('thinking');
     playSound('process');
 
-    // --- SUPER-STRATEGY 1: Direct App & Multi-Word Logic ---
+    // --- STRATEGY 1: Direct Knowledge/Personality ---
+    let knowledgeMatched = false;
+    for (let key in KNOWLEDGE) {
+        if (cmd.includes(key)) {
+            speak(KNOWLEDGE[key]);
+            knowledgeMatched = true;
+            break;
+        }
+    }
+    if (knowledgeMatched) {
+        avatarEl.classList.remove('thinking');
+        return;
+    }
+
+    // --- STRATEGY 2: App & External Tools ---
     const appData = INTENTS.find(i => i.name === 'app_open').apps;
     let foundApp = false;
     for (let key in appData) {
-        // Match even if the app name is just MENTIONED anywhere
         if (appData[key][2].some(syn => cmd.includes(syn))) {
             const win = window.open(appData[key][0], "_blank");
-            if (win) {
-                speak(appData[key][1]);
-            } else {
-                speak("Bhai, pop-up block hai! Please allow kijiye screen ke upar se.");
-            }
+            if (win) speak(appData[key][1]);
+            else speak("Bhai, pop-up block hai! Please allow kijiye.");
             foundApp = true;
             break;
         }
@@ -312,17 +322,8 @@ function handleCommand(command) {
         return;
     }
 
-    // --- SUPER-STRATEGY 2: Social/Emotional Brain ---
-    for (let key in KNOWLEDGE) {
-        if (cmd.includes(key)) {
-            speak(KNOWLEDGE[key]);
-            avatarEl.classList.remove('thinking');
-            return;
-        }
-    }
-
-    // --- SUPER-STRATEGY 3: Smart YouTube Search ---
-    if (cmd.includes("gana") || cmd.includes("song") || cmd.includes("video") || cmd.includes("play") || cmd.includes("music")) {
+    // --- STRATEGY 3: Smart YouTube/Search Verbs ---
+    if (cmd.includes("gana") || cmd.includes("song") || cmd.includes("video") || cmd.includes("play")) {
         let query = cmd.replace(/youtube|pe|chalao|video|dikhao|gana|sunao|ganu|play|bajao|search|song|music/g, "").trim();
         if (query.length > 1) {
             speak(`Zaroor Yug, YouTube par ${query} play kar rahi hoon.`);
@@ -332,26 +333,20 @@ function handleCommand(command) {
         }
     }
 
-    // --- SUPER-STRATEGY 4: Ultimate Google Question Fallback ---
-    // If command looks like a search query and NOT a conversation
-    const commonWords = ["kaun", "kya", "kaise", "how", "what", "where", "who", "kaha", "kise"];
-    const isQuestion = commonWords.some(w => cmd.includes(w));
-
-    if (cmd.length > 6 && isQuestion) {
-        speak(`Theek hai Yug, main iske baare mein Google par search karti hoon.`);
-        setTimeout(() => {
-            window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
-        }, 2000);
-    }
-    else if (cmd.length > 2) {
-        speak("Hmm... Yug, ispe main kya kahu? Kya aap iske baare mein Google par janna chahte hain?");
-    }
-    else {
-        speak("Main sun rahi hoon Yug, par main ise samajh nahi paayi. Thoda aur batayiye?");
-    }
-
+    speak(`Theek hai Yug, main iske baare mein Google par search karti hoon.`);
     setTimeout(() => {
-        playSound('complete');
-        avatarEl.classList.remove('thinking');
-    }, 2500);
+        window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
+    }, 2000);
+}
+    else if (cmd.length > 2) {
+    speak("Hmm... Yug, ispe main kya kahu? Kya aap iske baare mein Google par janna chahte hain?");
+}
+else {
+    speak("Main sun rahi hoon Yug, par main ise samajh nahi paayi. Thoda aur batayiye?");
+}
+
+setTimeout(() => {
+    playSound('complete');
+    avatarEl.classList.remove('thinking');
+}, 2500);
 }
