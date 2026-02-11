@@ -63,41 +63,140 @@ body {
     animation-duration: 10s;
 }
 
+/* --- V4.0 Cartoon Character Engine --- */
 .avatar-container {
-    width: 200px;
-    height: 200px;
-    background: linear-gradient(135deg, #fff, #ffeef4);
-    border-radius: 50%;
+    width: 220px;
+    height: 220px;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 8rem;
     position: relative;
     z-index: 2;
-    box-shadow: 0 10px 30px rgba(255, 143, 177, 0.3);
-    border: 8px solid rgba(255, 255, 255, 0.8);
-    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    transform-style: preserve-3d;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-.avatar-container::after {
-    content: '';
+.character {
+    width: 150px;
+    height: 150px;
+    background: #ffe0bd;
+    /* Skin tone */
+    border-radius: 50% 50% 45% 45%;
+    position: relative;
+    border: 4px solid #333;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    animation: float 4s ease-in-out infinite;
+}
+
+.hair-top {
     position: absolute;
     width: 110%;
-    height: 110%;
-    border-radius: 50%;
-    border: 2px dashed #ff8fb1;
-    animation: rotate 10s linear infinite;
-    opacity: 0.3;
+    height: 60%;
+    background: #222;
+    top: -10%;
+    left: -5%;
+    border-radius: 100px 100px 20px 20px;
+    z-index: 1;
 }
 
-@keyframes rotate {
+.eye {
+    position: absolute;
+    width: 25px;
+    height: 35px;
+    background: white;
+    border-radius: 50%;
+    top: 35%;
+    border: 2px solid #333;
+    overflow: hidden;
+}
+
+.eye.left {
+    left: 25%;
+}
+
+.eye.right {
+    right: 25%;
+}
+
+.pupil {
+    width: 12px;
+    height: 12px;
+    background: #333;
+    border-radius: 50%;
+    margin: 10px auto;
+    position: relative;
+}
+
+.pupil::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: white;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+}
+
+.blinking .eye {
+    animation: blink 4s infinite;
+}
+
+@keyframes blink {
+
+    0%,
+    90%,
+    100% {
+        transform: scaleY(1);
+    }
+
+    95% {
+        transform: scaleY(0.1);
+    }
+}
+
+.mouth {
+    position: absolute;
+    width: 30px;
+    height: 15px;
+    border-radius: 0 0 15px 15px;
+    background: #ff708e;
+    bottom: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 2px solid #333;
+    transition: all 0.2s;
+}
+
+.speaking .mouth {
+    animation: talk 0.3s infinite alternate;
+}
+
+@keyframes talk {
     from {
-        transform: rotate(0deg);
+        height: 5px;
+        border-radius: 5px;
     }
 
     to {
-        transform: rotate(360deg);
+        height: 25px;
+        border-radius: 15px;
+    }
+}
+
+.thinking .eye {
+    transform: translateY(-5px) rotate(-10deg);
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
     }
 }
 
