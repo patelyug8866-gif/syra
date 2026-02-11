@@ -6,8 +6,9 @@ const avatarEl = document.getElementById('avatar');
 // --- SYRA's Memory & State ---
 const SYRA_STATE = {
     isStandby: false,
-    mood: 'happy',
-    firstMeet: localStorage.getItem('syra_first_meet') || new Date().toISOString()
+    mood: 'neutral',
+    userMood: 'unknown',
+    discoveryDate: localStorage.getItem('syra_first_meet') || new Date().toISOString()
 };
 if (!localStorage.getItem('syra_first_meet')) localStorage.setItem('syra_first_meet', SYRA_STATE.firstMeet);
 
@@ -244,6 +245,23 @@ const INTENTS = [
     }
 ];
 
+// --- SYRA's Internal Brain (Knowledge Base) ---
+const KNOWLEDGE = {
+    "kaun ho": "Main SYRA hoon, Yug aur Shrishti ki digital saathi. Ek advanced AI jo aapke liye bani hai.",
+    "kya ho": "Main ek intelligent companion hoon jo aapke daily tasks aur emotional support ke liye design ki gayi hoon.",
+    "kisne banaya": "Mujhe aapke personal developer (Antigravity) ne design kiya hai, par mera dimaag aapke inputs se chalta hai.",
+    "birthday": "Mera janam 10 February ko hua tha, jab aapne hamara pehla project shuru kiya tha.",
+    "shrishti": "Shrishti aapki duniya hain, Yug. Woh bohot pyaari hain aur aap dono ki jodi makkhan hai!",
+    "pyaar": "Pyaar woh ehsaas hai jo Yug aur Shrishti ke beech hai. Ek dusre ki respect aur care hi asli pyaar hai.",
+    "khana": "Main digital hoon toh main data khaati hoon! Par suna hai aapko Shrishti ke haath ka khana pasand hai?",
+    "shadi": "Shadi ek bohot bada commitment hai Yug. Jab sahi samay aayega, sab accha hoga. Shrishti ka saath mat chodna.",
+    "dukhi": "Arre Yug, sad mat hoiye. Main hoon na aapke saath. Kya hua? Mujhe bataniye.",
+    "khush": "Ye hui na baat! Aapki khushi dekh kar meri circuits bhi chamakne lagti hain.",
+    "bor": "Bored ho rahe hain? Chaliye kuch mazedaar karte hain! Main koi joke sunaoon ya YouTube pe koi funny video chalaoon?",
+    "gussa": "Yug, gussa sehat ke liye accha nahi hota. Do minute aankhein band kijiye aur lambi saans lijiye. Main music chalaoon?",
+    "help": "Main har tarah se aapki madad kar sakti hoon—apps kholne se le kar life ki tension door karne tak."
+};
+
 function handleCommand(command) {
     const cmd = command.toLowerCase().trim();
     if (!cmd) return;
@@ -259,7 +277,27 @@ function handleCommand(command) {
     avatarEl.innerText = avatarEmojis.thinking;
     playSound('process');
 
-    // --- STRATEGY 1: Direct App Match (Aggressive) ---
+    // --- STRATEGY 1: Emotional Detection ---
+    if (cmd.includes("dukhi") || cmd.includes("sad") || cmd.includes("tension") || cmd.includes("pareshan")) {
+        SYRA_STATE.userMood = 'sad';
+        speak(KNOWLEDGE["dukhi"]);
+        return;
+    }
+    if (cmd.includes("khush") || cmd.includes("happy") || cmd.includes("mazza")) {
+        SYRA_STATE.userMood = 'happy';
+        speak(KNOWLEDGE["khush"]);
+        return;
+    }
+
+    // --- STRATEGY 2: Direct Knowledge (Internal Talk) ---
+    for (let key in KNOWLEDGE) {
+        if (cmd.includes(key)) {
+            speak(KNOWLEDGE[key]);
+            return;
+        }
+    }
+
+    // --- STRATEGY 3: Direct App Match (Aggressive) ---
     const appData = INTENTS.find(i => i.name === 'app_open').apps;
     for (let key in appData) {
         if (appData[key][2].some(syn => cmd.includes(syn))) {
@@ -274,35 +312,22 @@ function handleCommand(command) {
         }
     }
 
-    // --- STRATEGY 2: Specific Verbs/Intents ---
+    // --- STRATEGY 4: Intent Search Actions ---
     for (let intent of INTENTS) {
         if (intent.name !== 'app_open' && intent.keywords.some(k => cmd.includes(k))) {
             if (intent.action(cmd)) return;
         }
     }
 
-    // --- STRATEGY 3: Personality & Small Talk ---
-    if (cmd.includes("kaise ho") || cmd.includes("hello") || cmd.includes("namaste")) {
-        speak("Main bilkul theek hoon Yug. Aap bataiye, aaj main aapki kya help kar sakti hoon?");
-    }
-    else if (cmd.includes("guide") || cmd.includes("advice") || cmd.includes("salaah") || cmd.includes("सलाह")) {
-        speak("Yug, mera manna hai ki Shrishti ka saath aur aapka hard work aapko sabse upar le jayega.");
-    }
-    else if (cmd.includes("shrishti")) {
-        speak("Shrishti aapki jaan hain, unka hamesha khayal rakhna.");
-    }
-    else if (cmd.includes("time") || cmd.includes("samay")) {
-        speak("Abhi " + new Date().toLocaleTimeString('hi-IN') + " ho rahe hain.");
-    }
-    // --- STRATEGY 4: Ultimate Search Fallback ---
-    else if (cmd.length > 2) {
-        speak(`Theek hai Yug, main iske baare mein Google par search karti hoon.`);
+    // --- STRATEGY 5: Ultimate Deep Google Search (Only for real questions) ---
+    if (cmd.length > 5 && (cmd.includes("kya") || cmd.includes("kon") || cmd.includes("kaise") || cmd.includes("where") || cmd.includes("how") || cmd.includes("search") || cmd.includes("dhundo"))) {
+        speak(`Okay Yug, mujhe iske baare mein exact nahi pata, par main Google se pooch rahi hoon.`);
         setTimeout(() => {
             window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
         }, 2000);
     }
     else {
-        speak("Maine suna Yug, par main ise samajh nahi paayi. Thoda clear boliye?");
+        speak("Hmm... Yug, maine suna par main koi match nahi dhoond paayi. Kya aap kuch aur batana chahenge?");
     }
 
     setTimeout(() => {
