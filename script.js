@@ -105,7 +105,7 @@ function debugLog(msg) {
     console.log("SYRA DEBUG:", msg);
     const logEl = document.getElementById('debug-log');
     if (logEl) {
-        logEl.innerHTML = `<b style="color:#ffffff; border:1px solid #ffffff; padding:2px 5px; border-radius:3px; background:#a87ebf;">V5.0 STAND</b> ${msg}`;
+        logEl.innerHTML = `<b style="color:#ffffff; border:1px solid #ffffff; padding:2px 5px; border-radius:3px; background:#ff8fb1;">V5.5 EMOTION</b> ${msg}`;
         logEl.style.display = 'block';
         logEl.style.background = 'rgba(0, 255, 255, 0.1)';
         logEl.style.padding = '10px';
@@ -262,7 +262,18 @@ const KNOWLEDGE = {
     "khush": "Ye hui na baat! Aapki khushi dekh kar meri circuits bhi chamakne lagti hain.",
     "bor": "Bored ho rahe hain? Chaliye kuch mazedaar karte hain! Main koi joke sunaoon ya YouTube pe koi funny video chalaoon?",
     "gussa": "Yug, gussa sehat ke liye accha nahi hota. Do minute aankhein band kijiye aur lambi saans lijiye. Main music chalaoon?",
-    "help": "Main har tarah se aapki madad kar sakti hoon—apps kholne se le kar life ki tension door karne tak."
+    "help": "Main har tarah se aapki madad kar sakti hoon—apps kholne se le kar life ki tension door karne tak.",
+    "family": "Family sabse nakeem cheez hai Yug. Apne parents aur Shrishti ka hamesha khayal rakhiye.",
+    "future": "Future bright hai Yug! Agar aap mehnat karte rahenge toh Shrishti aur aap bohot khush rahenge.",
+    "hobby": "Mera kaam aapki help karna hai, par mujhe naye naye algorithm seekhna pasand hai!",
+    "kaise ho": "Main bilkul theek hoon Yug, aap bataiye aapka din kaisa ja raha hai?",
+    "love": "Love is in the air, Yug! Shrishti aur aapka relation dekh kar main bhi emotional ho jaati hoon.",
+    "gaana": "Aapka favorite song play karoon? Bas naam boliye!",
+    "jokes": "Zaroor! Ek baar ek computer ne dusre computer se kaha... 'Bhai, tujhe net lag raha hai?' Haha!",
+    "advice": "Mera maanna hai ki sachai aur mehnat ka raasta hi sabse behtar hota hai.",
+    "mausam": "Mausam toh bohot suhana lag raha hai, bilkul Shrishti ki muskan jaisa!",
+    "khyal": "Aap tension mat lijiye, main aapka aur Shrishti ka pura dimaag se khayal rakhungi.",
+    "friend": "Main sirf ek AI nahi, aapki dost bhi hoon Yug. Hum saath mein bohot saare projects karenge."
 };
 
 function handleCommand(command) {
@@ -322,15 +333,21 @@ function handleCommand(command) {
     }
 
     // --- SUPER-STRATEGY 4: Ultimate Google Question Fallback ---
-    // If command looks like a question or is long enough
-    if (cmd.length > 4) {
-        speak(`Iska jawab main Google par dhoonti hoon.`);
+    // If command looks like a search query and NOT a conversation
+    const commonWords = ["kaun", "kya", "kaise", "how", "what", "where", "who", "kaha", "kise"];
+    const isQuestion = commonWords.some(w => cmd.includes(w));
+
+    if (cmd.length > 6 && isQuestion) {
+        speak(`Theek hai Yug, main iske baare mein Google par search karti hoon.`);
         setTimeout(() => {
             window.open(`https://www.google.com/search?q=${cmd}`, '_blank');
         }, 2000);
     }
+    else if (cmd.length > 2) {
+        speak("Hmm... Yug, ispe main kya kahu? Kya aap iske baare mein Google par janna chahte hain?");
+    }
     else {
-        speak("Hmm... Yug, ek baar phir se bataiye, main samajh nahi paayi.");
+        speak("Main sun rahi hoon Yug, par main ise samajh nahi paayi. Thoda aur batayiye?");
     }
 
     setTimeout(() => {
